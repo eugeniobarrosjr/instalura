@@ -1,61 +1,34 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  Text,
-  View,
-  Image,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
+import React, {Component} from 'react';
+import {SafeAreaView, ScrollView, StatusBar} from 'react-native';
 
-const ScreenDimension = Dimensions.get('screen').width;
+import Post from './components/Post';
 
-import image from './assets/images/paisagem-01.jpg';
+class App extends Component {
+  state = {
+    photos: [],
+  };
 
-const App: () => React$Node = () => {
-  const photos = [
-    {id: 1, user: 'rafael'},
-    {id: 2, user: 'pedro'},
-    {id: 3, user: 'eugenio'},
-  ];
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView contentInsetAdjustmentBehavior="automatic">
-          {photos.map(photo => (
-            <View key={photo.id}>
-              <View style={styles.profileWrapper}>
-                <Image source={image} style={styles.profileImage} />
-                <Text>{photo.user}</Text>
-              </View>
-              <Image source={image} style={styles.postImage} />
-            </View>
-          ))}
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+  componentDidMount(): void {
+    fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
+      .then(response => response.json())
+      .then(json => this.setState({photos: json}));
+  }
 
-const styles = StyleSheet.create({
-  profileWrapper: {
-    margin: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profileImage: {
-    marginRight: 10,
-    borderRadius: 20,
-    height: 40,
-    width: 40,
-  },
-  postImage: {
-    height: ScreenDimension,
-    width: ScreenDimension,
-  },
-});
+  render() {
+    const {photos} = this.state;
+    return (
+      <>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView>
+          <ScrollView contentInsetAdjustmentBehavior="automatic">
+            {photos.map(photo => (
+              <Post key={photo.id} photo={photo} />
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </>
+    );
+  }
+}
 
 export default App;
